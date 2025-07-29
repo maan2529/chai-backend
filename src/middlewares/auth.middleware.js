@@ -9,18 +9,18 @@ export const varifyJWT = asyncHandler(async (req, _, next) => {
             req.cookies.accessToken ||
             req.header("Authorization")?.replace("Bearer ", "");
 
-        console.log("req.cookies", req.cookies);
-        console.log("req.header", req.header.Authentication);
-        console.log("req.cookies.accessToken ", req.cookies.accessToken);
+        // console.log("req.cookies", req.cookies);
+        // console.log("req.header", req.header.Authentication);
+        // console.log("req.cookies.accessToken ", req.cookies.accessToken);
 
         if (!token) {
             throw new ApiError(401, "Unauthorized token")
         }
         const varifyToken = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET) // it return payload 
-        // if (!varifyToken) {
-        //     throw new ApiError(401, 'Wrong Varify Token')
-        // }
-        console.log(varifyToken)
+        if (!varifyToken) {
+            throw new ApiError(401, 'Wrong Varify Token')
+        }
+        // console.log(varifyToken)
         const user = await User.findById(varifyToken?._id).select("-password -refreshToken")
         if (!user) {
             throw new ApiError(401, "Invalid access token")
